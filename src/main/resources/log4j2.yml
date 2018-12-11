@@ -24,7 +24,7 @@ Configuration:
     RollingFile:
       - name: ROLLING_FILE
         fileName: ${log.path}/${project.name}.log
-        filePattern: "${log.path}/historyRunLog/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
+        filePattern: "${log.path}/historyRunLog/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
         PatternLayout:
           pattern: ${log.pattern}
         Filters:
@@ -37,42 +37,48 @@ Configuration:
               onMatch: ACCEPT
               onMismatch: DENY
         Policies:
-          TimeBasedTriggeringPolicy:  # 按天分类
-            modulate: true
-            interval: 1
+#          TimeBasedTriggeringPolicy:  # 按天分类
+#            modulate: true
+#            interval: 1
+          SizeBasedTriggeringPolicy:
+              size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
 #   平台日志
       - name: PLATFORM_ROLLING_FILE
         ignoreExceptions: false
         fileName: ${log.path}/platform/${project.name}_platform.log
-        filePattern: "${log.path}/platform/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
+        filePattern: "${log.path}/platform/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
         PatternLayout:
           pattern: ${log.pattern}
         Policies:
-          TimeBasedTriggeringPolicy:  # 按天分类
-            modulate: true
-            interval: 1
+#          TimeBasedTriggeringPolicy:  # 按天分类
+#            modulate: true
+#            interval: 1
+          SizeBasedTriggeringPolicy:
+              size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
 #   业务日志
       - name: BUSSINESS_ROLLING_FILE
         ignoreExceptions: false
         fileName: ${log.path}/bussiness/${project.name}_bussiness.log
-        filePattern: "${log.path}/bussiness/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
+        filePattern: "${log.path}/bussiness/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
         PatternLayout:
           pattern: ${log.pattern}
         Policies:
-          TimeBasedTriggeringPolicy:  # 按天分类
-            modulate: true
-            interval: 1
+#          TimeBasedTriggeringPolicy:  # 按天分类
+#            modulate: true
+#            interval: 1
+          SizeBasedTriggeringPolicy:
+              size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
 #   错误日志
       - name: EXCEPTION_ROLLING_FILE
         ignoreExceptions: false
         fileName: ${log.path}/exception/${project.name}_exception.log
-        filePattern: "${log.path}/exception/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
+        filePattern: "${log.path}/exception/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
         ThresholdFilter:
           level: error
           onMatch: ACCEPT
@@ -80,22 +86,26 @@ Configuration:
         PatternLayout:
           pattern: ${log.pattern}
         Policies:
-          TimeBasedTriggeringPolicy:  # 按天分类
-            modulate: true
-            interval: 1
+#          TimeBasedTriggeringPolicy:  # 按天分类
+#            modulate: true
+#            interval: 1
+          SizeBasedTriggeringPolicy:
+              size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
 #   DB 日志
       - name: DB_ROLLING_FILE
         ignoreExceptions: false
         fileName: ${log.path}/db/${project.name}_db.log
-        filePattern: "${log.path}/db/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
+        filePattern: "${log.path}/db/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
         PatternLayout:
           pattern: ${log.pattern}
         Policies:
-          TimeBasedTriggeringPolicy:  # 按天分类
-            modulate: true
-            interval: 1
+#          TimeBasedTriggeringPolicy:  # 按天分类
+#            modulate: true
+#            interval: 1
+          SizeBasedTriggeringPolicy:
+              size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
   Loggers:
