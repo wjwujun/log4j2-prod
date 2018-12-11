@@ -1,8 +1,8 @@
 # 共有8个级别，按照从低到高为：ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF。
 Configuration:
   status: warn
-  monitorInterval: 30
-  Properties: # 定义全局变量
+  monitorInterval: 30 #监控间隔，例如：monitorInterval=”30” 指log4j2每隔30秒，自动监控该配置文件是否有变化，如果变化，则自动根据文件内容重新配置
+  Properties:     # 节点可用来自定义配置变量,后面的配置可以使用${propertyName}来引用
     Property: # 缺省配置（用于开发环境）。其他环境需要在VM参数中指定，如下：
       #测试：-Dlog.level.console=warn -Dlog.level.xjj=trace
       #生产：-Dlog.level.console=warn -Dlog.level.xjj=info
@@ -14,38 +14,35 @@ Configuration:
         value: opendoc
       - name: log.pattern
         value: "%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-30.30C{1.} : %m%n"
-  Appenders:
+  Appenders:    #定义输出类型
     Console:  #输出到控制台
-      name: CONSOLE
-      target: SYSTEM_OUT
-      PatternLayout:
+      name: CONSOLE   #指定Appender的名字.
+      target: SYSTEM_OUT    #SYSTEM_OUT 或 SYSTEM_ERR,一般只设置默认:SYSTEM_OUT.
+      PatternLayout:     #格式化输出日志
         pattern: ${log.pattern}
-#   启动日志
-    RollingFile:
-      - name: ROLLING_FILE
-        fileName: ${log.path}/${project.name}.log
-        filePattern: "${log.path}/historyRunLog/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
-        PatternLayout:
+    RollingFile:  #   可作为按日输出日志的方式
+      - name: ROLLING_FILE    #指定Appender的名字.
+        fileName: ${log.path}/${project.name}.log   #指定输出日志的目的文件带全路径的文件名.
+        filePattern: "${log.path}/historyRunLog/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"   #指定新建日志文件的名称格式.
+        PatternLayout:    #输出格式，不设置默认为:%m%n.
           pattern: ${log.pattern}
         Filters:
-#        一定要先去除不接受的日志级别，然后获取需要接受的日志级别
-          ThresholdFilter:
-            - level: error
-              onMatch: DENY
-              onMismatch: NEUTRAL
+          ThresholdFilter:          #一定要先去除不接受的日志级别，然后获取需要接受的日志级别
+            - level: error          #输出级别，例：level=”info”,日志级别为info或者以上(匹配的界别)
+              onMatch: DENY         #DENY/ACCEPT 禁止或者接受（是否接受匹配）
+              onMismatch: NEUTRAL   #DENY/NEUTRAL （是否接受其他高于level的级别）
             - level: info
               onMatch: ACCEPT
               onMismatch: DENY
-        Policies:
+        Policies:   #指定滚动日志的策略，就是什么时候进行新建日志文件输出日志.
 #          TimeBasedTriggeringPolicy:  # 按天分类
 #            modulate: true
 #            interval: 1
-          SizeBasedTriggeringPolicy:
+          SizeBasedTriggeringPolicy:  #按大小切割
               size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
-#   平台日志
-      - name: PLATFORM_ROLLING_FILE
+      - name: PLATFORM_ROLLING_FILE  #   平台日志
         ignoreExceptions: false
         fileName: ${log.path}/platform/${project.name}_platform.log
         filePattern: "${log.path}/platform/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
@@ -59,8 +56,7 @@ Configuration:
               size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
-#   业务日志
-      - name: BUSSINESS_ROLLING_FILE
+      - name: BUSSINESS_ROLLING_FILE  #业务日志
         ignoreExceptions: false
         fileName: ${log.path}/bussiness/${project.name}_bussiness.log
         filePattern: "${log.path}/bussiness/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
@@ -74,8 +70,7 @@ Configuration:
               size: "1 KB"
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
-#   错误日志
-      - name: EXCEPTION_ROLLING_FILE
+      - name: EXCEPTION_ROLLING_FILE  #错误日志
         ignoreExceptions: false
         fileName: ${log.path}/exception/${project.name}_exception.log
         filePattern: "${log.path}/exception/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log"
@@ -106,20 +101,20 @@ Configuration:
 #            interval: 1
           SizeBasedTriggeringPolicy:
               size: "1 KB"
-        DefaultRolloverStrategy:     # 文件最多100个
           max: 100
-  Loggers:
-    Root:
+        DefaultRolloverStrategy:     # 文件最多100个
+  Loggers:        #Loggers 注册日志输出对象,全局级别
+    Root:         #始祖日志输出对象
       level: info
-      AppenderRef:
+      AppenderRef:    #Root的子节点，用来指定该日志输出到哪个Appender.
         - ref: CONSOLE
         - ref: ROLLING_FILE
         - ref: EXCEPTION_ROLLING_FILE
-    Logger:
-      - name: platform
-        level: info
-        additivity: false
-        AppenderRef:
+    Logger:             #单独指定日志的形式，比如要为指定包下的class指定不同的日志级别等。
+      - name: platform    #输出对象名称
+        level: info       #日志级别
+        additivity: false #是否冒泡，既在本层输出日志后是否需要在父对象上输出该日志，默认为 true
+        AppenderRef:    #Logger的子节点，用来指定该日志输出到哪个Appender,如果没有指定，就会默认继承自Root.如果指定了，那么会在指定的这个Appender和Root的Appender中都会输出，此时我们可以设置Logger的additivity="false"只在自定义的Appender中进行输出
           - ref: CONSOLE
           - ref: PLATFORM_ROLLING_FILE
       - name: bussiness
@@ -138,12 +133,4 @@ Configuration:
         AppenderRef:
           - ref: DB_ROLLING_FILE
 
-#    监听具体包下面的日志
-#    Logger: # 为com.xjj包配置特殊的Log级别，方便调试
-#      - name: com.xjj
-#        additivity: false
-#        level: ${sys:log.level.xjj}
-#        AppenderRef:
-#          - ref: CONSOLE
-#          - ref: ROLLING_FILE
 
